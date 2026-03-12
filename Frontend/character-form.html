@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Character Certificate Request</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-5">
+  <h2 class="mb-4 text-center">Character Certificate Request</h2>
+
+  <form id="characterForm" class="border rounded p-4 shadow-sm bg-light">
+    <div class="row g-3">
+
+      <div class="col-md-6">
+        <label class="form-label">College Name</label>
+        <input type="text" class="form-control" id="collegeName" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Student Name</label>
+        <input type="text" class="form-control" id="studentName" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Father’s Name</label>
+        <input type="text" class="form-control" id="fatherName" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Mother’s Name</label>
+        <input type="text" class="form-control" id="motherName" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Course / Program</label>
+        <input type="text" class="form-control" id="course" placeholder="e.g., B.Sc Computer Science" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Start Year</label>
+        <input type="number" class="form-control" id="startYear" placeholder="e.g., 2023" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">End Year</label>
+        <input type="number" class="form-control" id="endYear" placeholder="e.g., 2026" required>
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">No. of Years</label>
+        <input type="number" class="form-control" id="years" placeholder="e.g., 3" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">No. of Months</label>
+        <input type="number" class="form-control" id="months" placeholder="e.g., 6" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Conduct / Character</label>
+        <input type="text" class="form-control" id="conduct" placeholder="e.g., Good, Excellent" required>
+      </div>
+
+      <div class="col-md-12">
+        <label class="form-label">Additional Remarks (Optional)</label>
+        <input type="text" class="form-control" id="remarks" placeholder="Any extra comments or notes">
+      </div>
+    </div>
+
+    <div class="d-grid mt-4">
+      <button id="submitBtn" type="submit" class="btn btn-danger btn-lg">Submit Request</button>
+    </div>
+  </form>
+
+  <script>
+    document.getElementById("characterForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Please login first.");
+
+      const payload = {
+        type: "character",
+        data: {
+          collegeName: collegeName.value.trim(),
+          studentName: studentName.value.trim(),
+          fatherName: fatherName.value.trim(),
+          motherName: motherName.value.trim(),
+          course: course.value.trim(),
+          startYear: startYear.value,
+          endYear: endYear.value,
+          years: years.value,
+          months: months.value,
+          conduct: conduct.value.trim(),
+          remarks: remarks.value.trim()
+        }
+      };
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.textContent = "Submitting...";
+
+      try {
+        const res = await fetch("http://localhost:5001/api/requests", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("Failed to submit request");
+        alert("Request submitted successfully! Staff will approve it soon.");
+        e.target.reset();
+      } catch (err) {
+        alert("Error: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Submit Request";
+      }
+    });
+  </script>
+</body>
+</html>

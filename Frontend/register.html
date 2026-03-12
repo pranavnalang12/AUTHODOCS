@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - AuthoDocs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 0;
+    }
+
+    .register-container {
+      max-width: 540px;
+      width: 100%;
+    }
+
+    .register-card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .register-header {
+      text-align: center;
+      padding: 1.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .register-header .brand-name {
+      font-size: 1.9rem;
+      font-weight: 700;
+    }
+
+    .register-header .brand-name .auth {
+      color: #ed3636;
+    }
+
+    .register-header .brand-name .docs {
+      color: #000000;
+    }
+
+    .register-card .card-body {
+      padding: 2rem;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      border: 1px solid #e1e1e6;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: #ed3636;
+      box-shadow: 0 0 0 0.15rem rgba(237, 54, 54, 0.12);
+    }
+
+    .btn-submit {
+      background-color: #ed3636;
+      color: white;
+      font-weight: 700;
+      padding: 0.85rem 1rem;
+      border-radius: 10px;
+      border: none;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-submit:hover {
+      background-color: #d42a2a;
+      transform: translateY(-2px);
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 5px;
+      z-index: 5;
+    }
+
+    .password-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #6c757d;
+    }
+
+    .position-relative {
+      position: relative;
+    }
+
+    .footer-text {
+      font-size: 0.9rem;
+    }
+
+    .footer-text a {
+      color: #ed3636;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    @media (max-width: 575px) {
+      .register-container {
+        padding: 0 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-container">
+    <div class="card register-card">
+      <div class="register-header">
+        <div class="brand-name">
+          <span class="auth">Autho</span><span class="docs">Docs</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-warning" role="alert" id="staffNotice" style="display:none;">
+          Only pre-approved staff emails can register/login. Staff accounts are limited to 3.
+        </div>
+        <form id="register-form">
+          <div class="mb-3">
+            <label for="fullName" class="form-label">Name of Candidate</label>
+            <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="userRole" class="form-label">Register as</label>
+            <select class="form-select" id="userRole" required>
+              <option selected disabled value="">Choose your role...</option>
+              <option value="student">Student</option>
+              <option value="staff">Staff</option>
+            </select>
+          </div>
+
+          <!-- Student-only fields -->
+          <div id="studentFields" style="display:none;">
+            <div class="mb-3">
+              <label for="department" class="form-label">Department</label>
+              <select class="form-select" id="department">
+                <option value="" selected disabled>Choose department...</option>
+                <option>Computer Science</option>
+                <option>Information Technology</option>
+                <option>Commerce</option>
+                <option>BMS</option>
+                <option>BAF</option>
+                <option>Arts</option>
+                <option>bsc</option>
+                <option>MSC</option>
+              </select>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="year" class="form-label">Year</label>
+              <select class="form-select" id="year" required>
+                    <option value="" selected disabled>Choose year...</option>
+                    <option value="1">First Year</option>
+                    <option value="2">Second Year</option>
+                    <option value="3">Third Year</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="className" class="form-label">Class</label>
+                  <input type="text" class="form-control" id="className" placeholder="e.g. A, B or CS-A" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email ID</label>
+            <input type="email" class="form-control" id="email" placeholder="you@example.com" required>
+          </div>
+
+          <div class="mb-3 position-relative">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" placeholder="Create a password" required>
+            <button type="button" class="password-toggle-btn" id="password-toggle-1" aria-label="toggle password">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+              </svg>
+              <svg class="eye-slash-icon d-none" viewBox="0 0 24 24">
+                <path
+                  d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75C21.27 7.11 17 4.5 12 4.5c-1.77 0-3.44.5-4.94 1.36l2.1 2.1c.57-.23 1.18-.36 1.84-.36zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L21.73 22 20.46 23.27 3.27 6 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="mb-3 position-relative">
+            <label for="reenterPassword" class="form-label">Re-enter Password</label>
+            <input type="password" class="form-control" id="reenterPassword" placeholder="Confirm your password" required>
+            <button type="button" class="password-toggle-btn" id="password-toggle-2" aria-label="toggle password">
+              <svg class="eye-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
+              </svg>
+              <svg class="eye-slash-icon d-none" viewBox="0 0 24 24">
+                <path
+                  d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75C21.27 7.11 17 4.5 12 4.5c-1.77 0-3.44.5-4.94 1.36l2.1 2.1c.57-.23 1.18-.36 1.84-.36zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L21.73 22 20.46 23.27 3.27 6 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="d-grid">
+            <button id="submitBtn" type="submit" class="btn btn-submit">Register</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-4 footer-text">
+          <p>Already have an account? <a href="login.html">Login here</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+      // --- Password Toggle Helper ---
+      function setupPasswordToggle(inputId, toggleId) {
+        const passwordInput = document.getElementById(inputId);
+        const passwordToggle = document.getElementById(toggleId);
+        if (!passwordInput || !passwordToggle) return;
+        const eyeIcon = passwordToggle.querySelector('.eye-icon');
+        const eyeSlashIcon = passwordToggle.querySelector('.eye-slash-icon');
+
+        passwordToggle.addEventListener('click', function () {
+          if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon?.classList.add('d-none');
+            eyeSlashIcon?.classList.remove('d-none');
+          } else {
+            passwordInput.type = 'password';
+            eyeIcon?.classList.remove('d-none');
+            eyeSlashIcon?.classList.add('d-none');
+          }
+        });
+      }
+
+      setupPasswordToggle('password', 'password-toggle-1');
+      setupPasswordToggle('reenterPassword', 'password-toggle-2');
+
+      // --- Staff notice toggle ---
+      const userRoleSelect = document.getElementById('userRole');
+      const staffNotice = document.getElementById('staffNotice');
+      const studentFields = document.getElementById('studentFields');
+      const deptEl = document.getElementById('department');
+      const yearEl = document.getElementById('year');
+      const classEl = document.getElementById('className');
+      function updateNotice() {
+        staffNotice.style.display = userRoleSelect.value === 'staff' ? 'block' : 'none';
+        studentFields.style.display = userRoleSelect.value === 'student' ? 'block' : 'none';
+        const isStudent = userRoleSelect.value === 'student';
+        // Toggle validation/participation so hidden required controls don't block submit
+        if (deptEl) { deptEl.disabled = !isStudent; deptEl.required = isStudent; if (!isStudent) deptEl.value = ''; }
+        if (yearEl) { yearEl.disabled = !isStudent; yearEl.required = isStudent; if (!isStudent) yearEl.value = ''; }
+        if (classEl) { classEl.disabled = !isStudent; classEl.required = isStudent; if (!isStudent) classEl.value = ''; }
+      }
+      userRoleSelect.addEventListener('change', updateNotice);
+      updateNotice();
+
+      // --- Form Submission ---
+      const registerForm = document.getElementById('register-form');
+      const submitBtn = document.getElementById('submitBtn');
+
+      registerForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // collect values
+        const fullName = document.getElementById('fullName').value.trim();
+        const userRole = document.getElementById('userRole').value;
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const reenterPassword = document.getElementById('reenterPassword').value;
+
+        // validation
+        if (!fullName) { alert('Please enter your full name.'); return; }
+        if (!userRole) { alert('Please select your role.'); return; }
+        if (!email) { alert('Please enter your email.'); return; }
+        if (password.length < 6) { alert('Password must be at least 8 characters.'); return; }
+        if (password !== reenterPassword) { alert('Passwords do not match.'); return; }
+
+        // Student extra fields
+        let department = '';
+        let year = '';
+        let className = '';
+        if (userRole === 'student') {
+          department = (document.getElementById('department').value || '').trim();
+          year = (document.getElementById('year').value || '').trim();
+          className = (document.getElementById('className').value || '').trim();
+          if (!department) { alert('Please select your department.'); return; }
+          if (!year) { alert('Please select your year.'); return; }
+          if (!className) { alert('Please enter your class.'); return; }
+        }
+
+        // disable button
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Registering...';
+
+        try {
+          // Allowed staff emails
+          const allowedStaffEmails = [
+            'nalangpranav30@gmail.com',
+            'khushikumbhar@gmail.com',
+            'adityagurav@gmail.com'
+          ];
+
+          // Client-side block for Staff not in allowlist
+          if (userRole === 'staff' && !allowedStaffEmails.includes(email.toLowerCase())) {
+            alert('You are not authorized for this role.');
+            return;
+          }
+
+          const res = await fetch('http://localhost:5001/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: fullName, // 👈 fixed to match backend schema
+              role: userRole.charAt(0).toUpperCase() + userRole.slice(1), // 👈 capitalize role
+              email,
+              password,
+              department,
+              year,
+              className
+            })
+          });
+
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok) {
+            alert(data.message || 'Registration successful!');
+            registerForm.reset();
+            window.location.href = 'login.html';
+          } else {
+            const errMsg = data.error || data.message || 'Registration failed';
+            alert(errMsg);
+          }
+        } catch (err) {
+          console.error('Error connecting to server:', err);
+          alert('Error connecting to server. Make sure your backend is running.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Register';
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

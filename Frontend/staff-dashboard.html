@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Dashboard - AuthoDocs</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+  <style>
+    body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background-color:#f8f9fa;}
+    .wrapper{display:flex;}
+    .main-content{padding:2rem;width:100%;}
+    .dashboard-card{background-color:#fff;border:none;border-radius:15px;box-shadow:0 8px 25px rgba(0,0,0,.07);}
+    .stat-card .card-body{text-align:center;}
+    .stat-card .stat-icon{font-size:2.5rem;color:#ed3636;}
+    .stat-card .stat-number{font-size:2.5rem;font-weight:bold;}
+    .stat-card .stat-label{font-size:1rem;color:#6c757d;}
+    .sidebar{width:280px;min-height:100vh;background-color:#212529;color:#fff;flex-shrink:0;}
+    .sidebar .navbar-brand{text-align:center;display:block;padding-top:1.5rem;margin-bottom:2rem;}
+    .sidebar .navbar-brand img{height:40px;}
+    .sidebar-nav .nav-link{color:#adb5bd;font-weight:500;padding:.75rem 1.5rem;border-radius:8px;transition:color .2s ease,background-color .2s ease;}
+    .sidebar-nav .nav-link:hover{background-color:#343a40;color:#fff;}
+    .sidebar-nav .nav-link.active{background-color:#ed3636;color:#fff;}
+    .sidebar-nav .nav-link .fa-fw{margin-right:10px;}
+    .sidebar-footer{border-top:1px solid #495057;padding:1rem 1.5rem;margin-top:auto;}
+    .sidebar-footer .btn-danger{display:flex;align-items:center;justify-content:center;}
+    .mobile-navbar{background-color:#fff;box-shadow:0 2px 4px rgba(0,0,0,.05);}
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <div class="sidebar d-none d-lg-flex flex-column">
+      <a class="navbar-brand" href="staff-dashboard.html"><img src="logo.svg" alt="AuthoDocs Logo"/></a>
+      <ul class="nav flex-column sidebar-nav">
+        <li class="nav-item"><a class="nav-link active" href="staff-dashboard.html"><i class="fas fa-home fa-fw"></i> Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="staff-pending-requests.html"><i class="fas fa-inbox fa-fw"></i> Pending Requests</a></li>
+        <li class="nav-item"><a class="nav-link" href="staff-student-info.html"><i class="fas fa-users fa-fw"></i> Student Info</a></li>
+        <li class="nav-item"><a class="nav-link" href="staff-document-log.html"><i class="fas fa-history fa-fw"></i> Document Log</a></li>
+        <li class="nav-item"><a class="nav-link" href="about.html"><i class="fas fa-info-circle fa-fw"></i> About AuthoDocs</a></li>
+      </ul>
+      <div class="sidebar-footer">
+        <div class="d-flex align-items-center mb-3">
+          <i class="fas fa-user-circle fa-2x me-2"></i>
+          <div><h6 class="mb-0 text-white" id="sidebarStaffName">Staff Member</h6><small id="sidebarStaffRole">Role: Staff</small></div>
+        </div>
+        <a href="login.html" class="btn btn-danger w-100" id="logoutBtn"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a>
+      </div>
+    </div>
+
+    <div class="flex-fill">
+      <!-- Mobile Navbar -->
+      <nav class="navbar navbar-expand-lg d-lg-none mobile-navbar">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="staff-dashboard.html"><img src="logo.svg" alt="AuthoDocs Logo"/></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="mobileNav">
+            <ul class="navbar-nav mt-3">
+              <li class="nav-item"><a class="nav-link active" href="staff-dashboard.html">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="staff-pending-requests.html">Pending Requests</a></li>
+              <li class="nav-item"><a class="nav-link" href="staff-student-info.html">Student Info</a></li>
+              <li class="nav-item"><a class="nav-link" href="staff-document-log.html">Document Log</a></li>
+              <li class="nav-item"><a class="nav-link" href="about.html">About AuthoDocs</a></li>
+              <li class="nav-item dropdown mt-2">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"><i class="fas fa-user-circle me-1"></i> Profile</a>
+                <ul class="dropdown-menu">
+                  <li><h6 class="dropdown-header" id="mobileStaffName">Staff Member</h6></li>
+                  <li><p class="dropdown-item-text"><small class="text-muted">Role: Staff</small></p></li>
+                  <li><hr class="dropdown-divider"/></li>
+                  <li><a class="dropdown-item text-danger" href="login.html" id="mobileLogoutBtn">Logout</a></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <h1 class="mb-4">Staff Dashboard</h1>
+        <div class="row">
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card stat-card dashboard-card">
+              <div class="card-body">
+                <div class="stat-icon"><i class="fas fa-inbox"></i></div>
+                <div class="stat-number" id="pendingCount">0</div>
+                <div class="stat-label">Pending Requests</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card stat-card dashboard-card">
+              <div class="card-body">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-number" id="approvedToday">0</div>
+                <div class="stat-label">Approved Today</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card stat-card dashboard-card">
+              <div class="card-body">
+                <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="stat-number" id="topDoc">—</div>
+                <div class="stat-label">Most Retrieved Document</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+ <script src="https://cdn.socket.io/4.7.1/socket.io.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const pendingEl = document.getElementById("pendingCount");
+  const approvedEl = document.getElementById("approvedToday");
+  const topDocEl = document.getElementById("topDoc");
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  const fullName = localStorage.getItem("fullName");
+  const email = localStorage.getItem("email");
+
+  if (!token) {
+    alert("Please login as staff first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Populate staff identity in sidebar and mobile
+  const displayName = fullName || email || "Staff Member";
+  const sidebarStaffName = document.getElementById("sidebarStaffName");
+  const sidebarStaffRole = document.getElementById("sidebarStaffRole");
+  const mobileStaffName = document.getElementById("mobileStaffName");
+  if (sidebarStaffName) sidebarStaffName.textContent = displayName;
+  if (sidebarStaffRole) sidebarStaffRole.textContent = `Role: ${role || "Staff"}`;
+  if (mobileStaffName) mobileStaffName.textContent = displayName;
+
+  // Wire logout buttons to clear auth
+  function performLogout(e){
+    if (e) e.preventDefault();
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("fullName");
+    localStorage.removeItem("email");
+    window.location.href = "login.html";
+  }
+  const logoutBtn = document.getElementById("logoutBtn");
+  const mobileLogoutBtn = document.getElementById("mobileLogoutBtn");
+  if (logoutBtn) logoutBtn.addEventListener("click", performLogout);
+  if (mobileLogoutBtn) mobileLogoutBtn.addEventListener("click", performLogout);
+
+  let lastStats = { pending: 0, approvedToday: 0, topDocument: "—" };
+
+  // Animate numbers function (same as before)
+  function animateCounter(el, start, end, duration = 800) {
+    if (isNaN(end)) { el.textContent = "—"; return; }
+    const flashColor = end > start ? "#28a745" : end < start ? "#dc3545" : "#000";
+    if (flashColor !== "#000") {
+      el.style.transition = "color 0.3s";
+      el.style.color = flashColor;
+      setTimeout(() => { el.style.color = "#000"; }, duration);
+    }
+    let startTime = null;
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const value = Math.floor(progress * (end - start) + start);
+      el.textContent = value;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  async function fetchStats() {
+    try {
+      const res = await fetch("http://localhost:5001/api/stats/dashboard", {
+        headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+      });
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      const stats = await res.json();
+
+      const pending = stats.pending ?? 0;
+      const approvedToday = stats.approvedToday ?? 0;
+      const topDocument = stats.topDocument ?? "—";
+
+      animateCounter(pendingEl, lastStats.pending, pending);
+      animateCounter(approvedEl, lastStats.approvedToday, approvedToday);
+
+      if (topDocument !== lastStats.topDocument) {
+        topDocEl.textContent = topDocument;
+        topDocEl.style.transition = "color 0.3s";
+        topDocEl.style.color = "#28a745";
+        setTimeout(() => { topDocEl.style.color = "#000"; }, 800);
+      }
+
+      lastStats = { pending, approvedToday, topDocument };
+
+    } catch (err) {
+      console.error("Error fetching dashboard stats:", err);
+      pendingEl.textContent = "—";
+      approvedEl.textContent = "—";
+      topDocEl.textContent = "—";
+    }
+  }
+
+  // Initial load
+  fetchStats();
+
+  // Setup Socket.io
+  const socket = io("http://localhost:5001");
+  socket.on("connect", () => console.log("Connected to server via socket"));
+  socket.on("dashboardUpdate", fetchStats); // fetch stats only when new event received
+});
+</script>
+
+
+</body>
+</html>

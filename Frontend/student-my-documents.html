@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Documents - AuthoDocs</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; padding-top: 80px; }
+.navbar { background-color: #ffffff !important; border-bottom: 1px solid #e7e7e7; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.navbar-brand img { height: 40px; margin-right: 10px; }
+.nav-link { font-weight: 500; }
+.nav-link.active { color: #ed3636 !important; }
+.btn-outline-brand { color: #ed3636; border-color: #ed3636; }
+.btn-outline-brand:hover { background-color: #ed3636; color: white; }
+.btn-brand { background-color: #ed3636; color: white; }
+.table-responsive { border-radius: 15px; overflow: hidden; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07); }
+#welcomeNavBrand {
+    font-weight: bold;
+    color: #ed3636;
+    margin-left: 5px;
+    font-size: 1.1rem;
+}
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top">
+<div class="container-fluid">
+<a class="navbar-brand" href="student-dashboard.html">
+    <img src="logo.svg" alt="AuthoDocs Logo">
+    <span id="welcomeNavBrand"></span>
+</a>
+<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#studentNav">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="studentNav">
+<ul class="navbar-nav mx-auto">
+<li class="nav-item"><a class="nav-link" href="student-dashboard.html">Home</a></li>
+<li class="nav-item"><a class="nav-link" href="student-request-document.html">Document Templates</a></li>
+<li class="nav-item"><a class="nav-link active" href="student-my-documents.html">All Documents</a></li>
+<li class="nav-item"><a class="nav-link" href="student-store-document.html">Store Document</a></li>
+<li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+</ul>
+<div class="dropdown">
+<a href="#" class="btn btn-outline-brand dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+<i class="fas fa-user me-2"></i> <span id="navUserName">Loading...</span>
+</a>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><h6 class="dropdown-header" id="dropdownUserName">Loading...</h6></li>
+<li><p class="dropdown-item-text"><small class="text-muted" id="dropdownUserRole">Role: Loading...</small></p></li>
+<li><p class="dropdown-item-text"><small class="text-muted" id="dropdownUserEmail"></small></p></li>
+<li><hr class="dropdown-divider"></li>
+<li><a class="dropdown-item" href="#" id="logoutButton"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a></li>
+</ul>
+</div>
+</div>
+</div>
+</nav>
+<main class="container py-5">
+<h1 class="mb-4">All My Documents</h1>
+<div class="table-responsive">
+<table class="table table-striped table-hover align-middle bg-white">
+<thead class="table-dark">
+<tr><th>Document Name</th><th>Type</th><th>Status</th><th>Date</th><th>Actions</th></tr>
+</thead>
+<tbody id="documentsTableBody">
+<tr><td colspan="5" class="text-center">Loading...</td></tr>
+</tbody>
+</table>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const userName = localStorage.getItem('fullName');
+    const userEmail = localStorage.getItem('email');
+    const userRole = localStorage.getItem('role');
+    const token = localStorage.getItem('token');
+
+    // Protect page
+    if (!token || !userRole || userRole.toLowerCase() !== 'student') {
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Update UI with user info
+    const name = userName || 'User';
+    document.getElementById('navUserName').textContent = name;
+    document.getElementById('dropdownUserName').textContent = name;
+    document.getElementById('welcomeNavBrand').textContent = '';
+    if (userRole) {
+        document.getElementById('dropdownUserRole').textContent = `Role: ${userRole}`;
+    }
+    if (userEmail) {
+        document.getElementById('dropdownUserEmail').textContent = `Email: ${userEmail}`;
+    }
+
+    // Logout
+    document.getElementById('logoutButton').addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.href = 'login.html';
+    });
+
+    // Load documents
+    loadMyDocuments();
+
+    // Real-time: refresh list when this student's request gets approved/rejected
+    try {
+        const socket = io("http://localhost:5001");
+        socket.on("requestUpdated", () => {
+            // Refresh list; backend download is protected so this is safe
+            loadMyDocuments();
+        });
+    } catch (e) {
+        console.warn('Socket not available', e);
+    }
+});
+
+// Load all documents for logged-in student
+async function loadMyDocuments() {
+    const token = localStorage.getItem('token');
+    const tbody = document.getElementById('documentsTableBody');
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center">Loading...</td></tr>`;
+
+    try {
+        const res = await fetch("http://localhost:5001/api/requests/mine", {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            const errText = await res.text().catch(() => "Failed to fetch documents");
+            throw new Error(errText);
+        }
+
+        const raw = await res.json();
+        const list = Array.isArray(raw) ? raw : (Array.isArray(raw?.requests) ? raw.requests : []);
+
+        const approved = list.filter(r => r.status === "approved");
+
+        if (approved.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center">No approved documents yet</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = "";
+
+        approved.forEach(req => {
+            const row = document.createElement("tr");
+            const createdAt = new Date(req.updatedAt || req.createdAt).toLocaleDateString();
+
+            row.innerHTML = `
+                <td>${req.type || "Document"}</td>
+                <td>Generated</td>
+                <td><span class="badge bg-success">Approved</span></td>
+                <td>${createdAt}</td>
+                <td>
+                  <button class="btn btn-brand btn-sm" onclick="downloadDocument('${req._id}', '${req.type || 'document'}.pdf')">
+                    <i class="fas fa-download"></i> Download
+                  </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    } catch (err) {
+        console.error("Error loading documents:", err);
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger">Error loading documents</td></tr>`;
+    }
+}
+
+// Download document via fetch with JWT token
+async function downloadDocument(requestId, fileName) {
+    const token = localStorage.getItem('token');
+    if (!token) return alert("You are not logged in");
+
+    try {
+        const res = await fetch(`http://localhost:5001/api/requests/${requestId}/download`, {
+            method: "GET",
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({ message: "Failed to download document" }));
+            throw new Error(err.message || "Failed to download document");
+        }
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName || "document.pdf";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+}
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Home - AuthoDocs</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background-color: #f8f9fa; padding-top: 80px; }
+    .navbar { background-color: #ffffff !important; border-bottom: 1px solid #e7e7e7; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .navbar-brand img { height: 40px; }
+    .nav-link { font-weight: 500; }
+    .nav-link.active { color: #ed3636 !important; }
+    .btn-outline-brand { color: #ed3636; border-color: #ed3636; }
+    .btn-outline-brand:hover { background-color: #ed3636; color: white; }
+    .btn-brand { background-color: #ed3636; color: white; padding: 10px 25px; border-radius: 20px; text-decoration: none; font-weight: bold; }
+    .dashboard-card { background-color: #ffffff; border: none; border-radius: 15px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.07); cursor: pointer; }
+    .stat-card .card-body { text-align: center; }
+    .stat-card .stat-icon { font-size: 2.5rem; color: #ed3636; }
+    .stat-card .stat-number { font-size: 2.5rem; font-weight: bold; }
+    .stat-card .stat-label { font-size: 1rem; color: #6c757d; }
+</style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="student-dashboard.html"><img src="logo.svg" alt="AuthoDocs Logo"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#studentNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="studentNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link active" href="student-dashboard.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="student-request-document.html">Document Templates</a></li>
+                <li class="nav-item"><a class="nav-link" href="student-my-documents.html">All Documents</a></li>
+                <li class="nav-item"><a class="nav-link" href="student-store-document.html">Store Document</a></li>
+                <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+            </ul>
+            <div class="dropdown">
+                <a href="#" class="btn btn-outline-brand dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user me-2"></i> <span id="navUserName">Loading...</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><h6 class="dropdown-header" id="dropdownUserName">Loading...</h6></li>
+                    <li><p class="dropdown-item-text"><small class="text-muted" id="dropdownUserRole">Role: Loading...</small></p></li>
+                    <li><p class="dropdown-item-text"><small class="text-muted" id="dropdownUserEmail"></small></p></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" id="logoutButton"><i class="fas fa-sign-out-alt fa-fw me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-5">
+    <h1 class="mb-4" id="welcomeMessage">Welcome!</h1>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card dashboard-card" data-status="Approved">
+                <div class="card-body">
+                    <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="stat-number" id="approvedDocs">0</div>
+                    <div class="stat-label">Approved Documents</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card dashboard-card" data-status="Pending">
+                <div class="card-body">
+                    <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
+                    <div class="stat-number" id="pendingRequests">0</div>
+                    <div class="stat-label">Pending Request</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row align-items-stretch">
+        <div class="col-md-6 mb-4 d-flex">
+            <div class="card dashboard-card h-100 w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="mb-3">Pending Requests</h5>
+                    <ul id="pendingList" class="list-group list-group-flush flex-grow-1">
+                        <li class="list-group-item">Loading...</li>
+                    </ul>
+                    <div class="mt-3 text-center mt-auto">
+                        <button id="pendingMoreBtn" class="btn btn-outline-brand btn-sm" style="display:none;">Show more</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4 d-flex">
+            <div class="card dashboard-card h-100 w-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="mb-3">Approved Documents</h5>
+                    <ul id="approvedList" class="list-group list-group-flush flex-grow-1">
+                        <li class="list-group-item">Loading...</li>
+                    </ul>
+                    <div class="mt-3 text-center mt-auto">
+                        <button id="approvedMoreBtn" class="btn btn-outline-brand btn-sm" style="display:none;">Show more</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="p-5 mt-4 text-center bg-white rounded-3 dashboard-card">
+        <h2 class="display-5 fw-bold">Quick Actions</h2>
+        <a href="student-request-document.html" class="btn btn-brand btn-lg">Request a Document</a>
+    </div>
+</main>
+
+<!-- Modal for document list -->
+<div class="modal fade" id="docModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="docModalLabel">Documents</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul id="docList" class="list-group"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    const token = localStorage.getItem('token');
+    if (!token) { window.location.href = 'login.html'; return; }
+
+    const docModal = new bootstrap.Modal(document.getElementById('docModal'));
+    const docList = document.getElementById('docList');
+    const docModalLabel = document.getElementById('docModalLabel');
+
+    let userData = null;
+
+    try {
+        // Fetch user info
+        const userRes = await fetch('http://localhost:5001/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const userResp = await userRes.json();
+        if (userResp && userResp.success && userResp.data) {
+            const { fullName, email, role } = userResp.data;
+            userData = userResp.data;
+            const name = fullName || localStorage.getItem('fullName') || 'User';
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${name}!`;
+            document.getElementById('navUserName').textContent = name;
+            document.getElementById('dropdownUserName').textContent = name;
+            document.getElementById('dropdownUserRole').textContent = `Role: ${role || localStorage.getItem('role') || 'Student'}`;
+            document.getElementById('dropdownUserEmail').textContent = `Email: ${email || localStorage.getItem('email') || ''}`;
+            if ((role || localStorage.getItem('role')) !== 'Student') window.location.href = 'login.html';
+        } else {
+            // Fallback to local storage to avoid undefined
+            const name = localStorage.getItem('fullName') || 'User';
+            const email = localStorage.getItem('email') || '';
+            const role = localStorage.getItem('role') || 'Student';
+            userData = { _id: localStorage.getItem('id') || localStorage.getItem('userId') || '', fullName: name, email, role };
+            document.getElementById('welcomeMessage').textContent = `Welcome, ${name}!`;
+            document.getElementById('navUserName').textContent = name;
+            document.getElementById('dropdownUserName').textContent = name;
+            document.getElementById('dropdownUserRole').textContent = `Role: ${role}`;
+            document.getElementById('dropdownUserEmail').textContent = `Email: ${email}`;
+        }
+
+        // Fetch own requests
+    const myRes = await fetch('http://localhost:5001/api/requests/mine', {
+        headers: { 'Authorization': `Bearer ${token}` }
+    });
+    const raw = await myRes.json().catch(() => []);
+    const myList = Array.isArray(raw) ? raw : (Array.isArray(raw?.requests) ? raw.requests : []);
+    window.__dashApproved = myList.filter(r => r.status === 'approved');
+    window.__dashPending = myList.filter(r => r.status === 'pending');
+    window.__dashApprovedExpanded = false;
+    window.__dashPendingExpanded = false;
+
+    const approvedBadge = document.getElementById('approvedDocs');
+    const pendingBadge = document.getElementById('pendingRequests');
+    const approvedList = document.getElementById('approvedList');
+    const pendingList = document.getElementById('pendingList');
+    const approvedMoreBtn = document.getElementById('approvedMoreBtn');
+    const pendingMoreBtn = document.getElementById('pendingMoreBtn');
+
+    function renderList(ul, items, emptyText, expanded) {
+        if (!items.length) { ul.innerHTML = `<li class="list-group-item">${emptyText}</li>`; return; }
+        const visible = expanded ? items : items.slice(0, 5);
+        ul.innerHTML = visible.map(i => `<li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>${i.type} • ${new Date(i.updatedAt || i.createdAt).toLocaleString()}</span>
+            ${i.status === 'approved' ? `<a class=\"btn btn-outline-brand btn-sm\" href=\"#\" onclick=\"downloadFromDashboard('${i._id}', '${i.type}.pdf'); return false;\">Download</a>` : ''}
+        </li>`).join('');
+    }
+
+    function renderDashboard() {
+        approvedBadge.textContent = window.__dashApproved.length;
+        pendingBadge.textContent = window.__dashPending.length;
+        renderList(approvedList, window.__dashApproved, 'No approved documents', window.__dashApprovedExpanded);
+        renderList(pendingList, window.__dashPending, 'No pending requests', window.__dashPendingExpanded);
+        approvedMoreBtn.style.display = window.__dashApproved.length > 5 ? '' : 'none';
+        pendingMoreBtn.style.display = window.__dashPending.length > 5 ? '' : 'none';
+        approvedMoreBtn.textContent = window.__dashApprovedExpanded ? 'Show less' : 'Show more';
+        pendingMoreBtn.textContent = window.__dashPendingExpanded ? 'Show less' : 'Show more';
+    }
+
+    approvedMoreBtn.addEventListener('click', () => {
+        window.__dashApprovedExpanded = !window.__dashApprovedExpanded;
+        renderDashboard();
+    });
+    pendingMoreBtn.addEventListener('click', () => {
+        window.__dashPendingExpanded = !window.__dashPendingExpanded;
+        renderDashboard();
+    });
+
+    renderDashboard();
+    } catch (err) {
+        console.error('Error fetching data:', err);
+        alert('Failed to load dashboard data. Please try again.');
+    }
+
+    // Logout
+    document.getElementById('logoutButton').addEventListener('click', e => {
+        e.preventDefault();
+        localStorage.clear();
+        window.location.href = 'login.html';
+    });
+
+    // Click on card to view documents
+    document.querySelectorAll('.dashboard-card[data-status]').forEach(card => {
+        card.addEventListener('click', async () => {
+            const status = card.getAttribute('data-status');
+            docModalLabel.textContent = `${status} Documents`;
+            docList.innerHTML = '<li class="list-group-item">Loading...</li>';
+
+            try {
+                const res = await fetch(`http://localhost:5001/api/student/documents?status=${status}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.documents.length === 0) {
+                        docList.innerHTML = '<li class="list-group-item">No documents found.</li>';
+                    } else {
+                        docList.innerHTML = data.documents.map(doc => 
+                            `<li class="list-group-item">
+                                ${doc.docName} - ${new Date(doc.createdAt).toLocaleString()} (${doc.status})
+                            </li>`).join('');
+                    }
+                }
+                docModal.show();
+            } catch (err) {
+                console.error('Error fetching documents:', err);
+                docList.innerHTML = '<li class="list-group-item text-danger">Failed to load documents.</li>';
+                docModal.show();
+            }
+        });
+    });
+
+    // ===== Real-time updates via Socket.IO =====
+    const socket = io("http://localhost:5001");
+    
+    socket.on("connect", () => {
+        console.log("🔌 Connected to server via Socket.IO");
+    });
+
+    // New request submitted
+    socket.on("newRequest", data => {
+        if (!userData) return;
+        if (data.request.createdBy === userData._id) {
+            // Add to pending list and re-render
+            window.__dashPending.unshift({
+                _id: data.request._id,
+                type: data.request.type,
+                status: 'pending',
+                createdAt: data.request.createdAt || new Date().toISOString(),
+                updatedAt: data.request.updatedAt || new Date().toISOString()
+            });
+            renderDashboard();
+        }
+    });
+
+    // Request status updated
+    socket.on("requestUpdated", data => {
+        if (!userData) return;
+        const req = data.request;
+
+        if (req.createdBy === userData._id) {
+            // Remove from pending if present
+            window.__dashPending = window.__dashPending.filter(r => r._id !== req._id);
+            if (req.status === "approved") {
+                // Add to approved
+                window.__dashApproved.unshift({
+                    _id: req._id,
+                    type: req.type,
+                    status: 'approved',
+                    createdAt: req.createdAt || new Date().toISOString(),
+                    updatedAt: req.updatedAt || new Date().toISOString()
+                });
+            }
+            renderDashboard();
+        }
+    });
+});
+</script>
+
+</body>
+</html>
